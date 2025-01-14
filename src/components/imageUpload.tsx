@@ -23,7 +23,7 @@ const ImageUpload = () => {
 
   const processFile = useCallback(async (file) => {
     if (!file) return;
-
+    console.log({ file });
     // ファイルタイプの確認
     if (!file.type.startsWith("image/")) {
       setError("Only image files can be uploaded.");
@@ -38,8 +38,10 @@ const ImageUpload = () => {
 
     try {
       // Create FormData
-      const formData = new FormData();
-      formData.append("file", file);
+      const formData = new FormData(); //
+      formData.append("image", file);
+      // formData.append("file", file);
+      // formData.append("image", e.target.files[0]);
 
       // Upload for upload
       // const response = await fetch('/api/upload', {
@@ -50,6 +52,14 @@ const ImageUpload = () => {
       // if (!response.ok) throw new Error('Upload failed');
       // const data = await response.json();
       // setUploadedImage(data.url);
+
+      const response = await fetch("/api/analyze-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      setUploadedImage(data.url);
 
       // Preview for loacal
       const reader = new FileReader();
