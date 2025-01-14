@@ -1,14 +1,17 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useContext } from "react";
 import { UploadCloud, X } from "lucide-react";
 import Image from "next/image";
+import { ImageAnalysisContext } from "@/app/imageAnalysisProvider";
 
 const ImageUpload = () => {
   const [mounted, setMounted] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [uploadedImage, setUploadedImage] = useState("");
   const [error, setError] = useState("");
+
+  const { setImageAnalysisResult } = useContext(ImageAnalysisContext);
 
   // Move all useCallback declarations before any conditional returns
   const handleDrag = useCallback((e) => {
@@ -59,7 +62,8 @@ const ImageUpload = () => {
       });
 
       const data = await response.json();
-      setUploadedImage(data.url);
+      console.log({ data });
+      setImageAnalysisResult({ text: data.result.message.content });
 
       // Preview for loacal
       const reader = new FileReader();

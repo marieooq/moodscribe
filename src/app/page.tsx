@@ -1,9 +1,8 @@
-import ImageUpload from "@/components/imageUpload";
-
+import ImageInputOutputContainer from "@/components/imageInputOutput/imageInputOutputContainer";
 export default function Home() {
   return (
     <div className="p-4">
-      <ImageUpload />
+      <ImageInputOutputContainer />
     </div>
   );
 }
