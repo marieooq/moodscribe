@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-import encodeImage from "@/utils/encodeImage";
+import encodeImage from "../../../utils/encodeImage";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
