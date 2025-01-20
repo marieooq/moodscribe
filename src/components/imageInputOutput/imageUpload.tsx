@@ -63,7 +63,7 @@ const ImageUpload = () => {
 
       const data = await response.json();
       console.log({ data });
-      setImageAnalysisResult({ text: data.result.message.content });
+      setImageAnalysisResult({ text: data.result });
 
       // Preview for loacal
       const reader = new FileReader();

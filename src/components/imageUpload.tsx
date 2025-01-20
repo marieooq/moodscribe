@@ -40,26 +40,24 @@ const ImageUpload = () => {
       // Create FormData
       const formData = new FormData(); //
       formData.append("image", file);
-      // formData.append("file", file);
-      // formData.append("image", e.target.files[0]);
-
-      // Upload for upload
-      // const response = await fetch('/api/upload', {
-      //   method: 'POST',
-      //   body: formData,
-      // });
-
-      // if (!response.ok) throw new Error('Upload failed');
-      // const data = await response.json();
-      // setUploadedImage(data.url);
 
       const response = await fetch("/api/analyze-image", {
         method: "POST",
         body: formData,
       });
 
+      if (!response.ok) {
+        throw new Error("Failed to analyze image");
+      }
+
       const data = await response.json();
-      setUploadedImage(data.url);
+
+      if (data.error) {
+        setError(data.error);
+        return;
+      }
+
+      // setAnalysisResult(data.result);
 
       // Preview for loacal
       const reader = new FileReader();
@@ -109,21 +107,23 @@ const ImageUpload = () => {
   return (
     <div className="w-full max-w-md mx-auto">
       {uploadedImage ? (
-        <div className="relative rounded-lg overflow-hidden h-64">
-          <Image
-            src={uploadedImage}
-            alt="Uploaded preview"
-            fill
-            className="object-cover"
-            unoptimized={uploadedImage.startsWith("data:")}
-          />
-          <button
-            onClick={handleRemove}
-            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors z-10"
-            type="button"
-          >
-            <X className="w-5 h-5" />
-          </button>
+        <div className="space-y-4">
+          <div className="relative rounded-lg overflow-hidden h-64">
+            <Image
+              src={uploadedImage}
+              alt="Uploaded preview"
+              fill
+              className="object-cover"
+              unoptimized={uploadedImage.startsWith("data:")}
+            />
+            <button
+              onClick={handleRemove}
+              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors z-10"
+              type="button"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       ) : (
         <div

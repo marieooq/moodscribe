@@ -20,8 +20,6 @@ const ImageAnalysisProvider = ({ children }: { children: ReactNode }) => {
   const [imageAnalysisResult, setImageAnalysisResult] =
     useState<ImageAnalysisData | null>(null);
 
-  console.log("inside ImageAnalysisProvider:", imageAnalysisResult);
-
   return (
     <ImageAnalysisContext.Provider
       value={{ imageAnalysisResult, setImageAnalysisResult }}
