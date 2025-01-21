@@ -111,7 +111,7 @@ const ImageUpload = () => {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full mx-auto">
       {uploadedImage ? (
         <div className="relative rounded-lg overflow-hidden h-64">
           <Image

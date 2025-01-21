@@ -1,0 +1,124 @@
+"use client";
+
+import React, { useState } from "react";
+import { Calendar, Grid, List } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { DiaryEntry } from "@/types/diary";
+
+interface DiaryViewerProps {
+  entries: DiaryEntry[];
+}
+
+const DiaryViewer = ({ entries }: DiaryViewerProps) => {
+  const [viewMode, setViewMode] = useState("card");
+
+  // カード表示
+  const CardView = () => (
+    <div>
+      {entries.map((entry, index) => (
+        <Card key={index} className="w-full mb-8">
+          <CardHeader>
+            <CardTitle>
+              {new Date(entry.created_at).toLocaleDateString("ja-JP")}
+            </CardTitle>
+            <CardDescription>
+              Mood: {entry.mood === "positive" ? "😊" : "😐"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm">{entry.text_data}</p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+
+  // カレンダー表示
+  const CalendarView = () => (
+    <div className="grid grid-cols-7 gap-2">
+      {/* カレンダーのヘッダー */}
+      {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+        <div key={day} className="text-center font-bold p-2">
+          {day}
+        </div>
+      ))}
+      {/* カレンダーのセル */}
+      {Array(35)
+        .fill(null)
+        .map((_, index) => {
+          const entry = entries.find(
+            (e) => new Date(e.created_at).getDate() === index + 1
+          );
+          return (
+            <div key={index} className="border p-2 h-24 overflow-hidden">
+              <div className="font-bold">{index + 1}</div>
+              {entry && (
+                <div className="text-xs">
+                  {entry.text_data.substring(0, 50)}...
+                </div>
+              )}
+            </div>
+          );
+        })}
+    </div>
+  );
+
+  // リスト表示
+  const ListView = () => (
+    <div className="space-y-4">
+      {entries.map((entry, index) => (
+        <div key={index} className="border-b pb-4">
+          <div className="font-bold">
+            {new Date(entry.created_at).toLocaleDateString("ja-JP")}
+          </div>
+          <div className="mt-2">{entry.text_data}</div>
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="p-4 space-y-4 aligflex items-center w-full max-w-screen-md mx-auto">
+      {/* ビュー切替ボタン */}
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => setViewMode("card")}
+          className={`p-2 rounded ${
+            viewMode === "card" ? "bg-blue-500 text-white" : "bg-gray-200"
+          }`}
+        >
+          <Grid className="w-5 h-5" />
+        </button>
+        <button
+          onClick={() => setViewMode("calendar")}
+          className={`p-2 rounded ${
+            viewMode === "calendar" ? "bg-blue-500 text-white" : "bg-gray-200"
+          }`}
+        >
+          <Calendar className="w-5 h-5" />
+        </button>
+        <button
+          onClick={() => setViewMode("list")}
+          className={`p-2 rounded ${
+            viewMode === "list" ? "bg-blue-500 text-white" : "bg-gray-200"
+          }`}
+        >
+          <List className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* コンテンツ表示 */}
+      {viewMode === "card" && <CardView />}
+      {viewMode === "calendar" && <CalendarView />}
+      {viewMode === "list" && <ListView />}
+    </div>
+  );
+};
+
+export default DiaryViewer;

@@ -9,7 +9,7 @@ const ImageInputOutputContainer = () => {
   const { imageAnalysisResult } = useContext(ImageAnalysisContext);
 
   return (
-    <div className="aligflex items-center w-full max-w-md mx-auto">
+    <div className="aligflex items-center w-full max-w-screen-md mx-auto">
       <ImageUpload />
       {imageAnalysisResult && (
         <ImageAnalysisDisplay text={imageAnalysisResult.text} />
