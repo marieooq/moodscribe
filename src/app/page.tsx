@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import DiaryViewer from "@/components/diaryViewer";
 import type { DiaryEntry } from "@/types/diary";
+import UploadJournal from "@/components/uploadJournal";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -30,10 +31,17 @@ export default async function Home() {
   }
 
   return (
-    <div className="p-4">
-      <p>Hello, {user.email}!</p>
-      <ImageInputOutputContainer />
-      <DiaryViewer entries={diaryEntries as DiaryEntry[]} />
-    </div>
+    <>
+      <div className="p-4">
+        <p>Hello, {user.email}!</p>
+        <ImageInputOutputContainer />
+        <DiaryViewer entries={diaryEntries as DiaryEntry[]} />
+      </div>
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t">
+        <div className="container mx-auto p-4">
+          <UploadJournal />
+        </div>
+      </div>
+    </>
   );
 }
