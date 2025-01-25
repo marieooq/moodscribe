@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Calendar, Grid, List } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -16,13 +17,18 @@ interface DiaryViewerProps {
 }
 
 const DiaryViewer = ({ entries }: DiaryViewerProps) => {
+  const router = useRouter();
   const [viewMode, setViewMode] = useState("card");
 
   // カード表示
   const CardView = () => (
     <div>
-      {entries.map((entry, index) => (
-        <Card key={index} className="w-full mb-8">
+      {entries.map((entry) => (
+        <Card 
+          key={entry.id} 
+          className="w-full mb-8 cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => router.push(`/journal/${entry.id}`)}
+        >
           <CardHeader>
             <CardTitle>
               {new Date(entry.created_at).toLocaleDateString("ja-JP")}
