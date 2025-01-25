@@ -88,46 +88,46 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get the JSON body from the request
     const body = await req.json();
-    const { text } = body;
+    const { text, journalId } = body;
 
-    if (!text) {
+    if (!text || !journalId) {
       return NextResponse.json(
-        { error: "No text provided" },
+        { error: "Text and journal ID are required" },
         { status: 400 }
       );
     }
 
-    // Update the most recent journal entry for this user
+    // Update specific journal entry by ID
     const { data: updatedData, error: dbError } = await supabase
-      .from('journal')
+      .from("journal")
       .update({ text_data: text })
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(1)
+      .eq("id", journalId)
+      .eq("user_id", user.id)
       .select()
       .single();
 
     if (dbError) {
-      console.error('Database error:', dbError);
+      console.error("Database error:", dbError);
       return NextResponse.json(
         { error: "Failed to update journal" },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      data: updatedData
+      data: updatedData,
     });
-    
   } catch (error) {
     console.error("Error updating journal:", error);
     return NextResponse.json(

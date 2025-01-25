@@ -13,6 +13,7 @@ export default function UploadPage() {
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [journalId, setJournalId] = useState(null);
 
   const handleDrag = useCallback((e) => {
     e.preventDefault();
@@ -58,6 +59,7 @@ export default function UploadPage() {
 
         setExtractedText(data.result);
         setEditedText(data.result); // Set initial value for editing
+        setJournalId(data.savedData.id);
         setIsUploading(false);
 
         // Redirect to home page after successful upload
@@ -98,7 +100,10 @@ export default function UploadPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ text: editedText }),
+        body: JSON.stringify({
+          text: editedText,
+          journalId: journalId,
+        }),
       });
 
       if (!response.ok) {
