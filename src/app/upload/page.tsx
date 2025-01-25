@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 export default function UploadPage() {
   const router = useRouter();
   const [dragActive, setDragActive] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState("");
+  const [extractedText, setExtractedText] = useState("");
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
@@ -22,57 +22,70 @@ export default function UploadPage() {
     }
   }, []);
 
-  const processFile = useCallback(async (file) => {
-    if (!file) return;
+  const processFile = useCallback(
+    async (file) => {
+      if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      setError("Only image files can be uploaded.");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Please keep the file size under 5MB.");
-      return;
-    }
-
-    try {
-      setIsUploading(true);
-      const formData = new FormData();
-      formData.append("image", file);
-
-      const response = await fetch("/api/analyze-image", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
+      if (!file.type.startsWith("image/")) {
+        setError("Only image files can be uploaded.");
+        return;
       }
 
-      const data = await response.json();
-      setIsUploading(false);
-      
-      // Redirect to home page after successful upload
-      router.push('/');
-    } catch (err) {
-      setIsUploading(false);
-      setError("An error occurred during upload.");
-      console.error("Upload error:", err);
-    }
-  }, [router]);
+      if (file.size > 5 * 1024 * 1024) {
+        setError("Please keep the file size under 5MB.");
+        return;
+      }
 
-  const handleDrop = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    const file = e.dataTransfer.files?.[0];
-    processFile(file);
-  }, [processFile]);
+      try {
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append("image", file);
 
-  const handleChange = useCallback((e) => {
-    const file = e.target.files?.[0];
-    processFile(file);
-  }, [processFile]);
+        const response = await fetch("/api/analyze-image", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Upload failed");
+        }
+
+        const data = await response.json();
+
+        console.log({ data });
+
+        setExtractedText(data.result);
+        setIsUploading(false);
+
+        // Redirect to home page after successful upload
+        //   router.push('/');
+      } catch (err) {
+        setIsUploading(false);
+        setError("An error occurred during upload.");
+        console.error("Upload error:", err);
+      }
+    },
+    [router]
+  );
+
+  const handleDrop = useCallback(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
+      const file = e.dataTransfer.files?.[0];
+      processFile(file);
+    },
+    [processFile]
+  );
+
+  const handleChange = useCallback(
+    (e) => {
+      const file = e.target.files?.[0];
+      processFile(file);
+    },
+    [processFile]
+  );
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -108,9 +121,8 @@ export default function UploadPage() {
             </div>
           )}
         </div>
-        {error && (
-          <p className="text-red-500 text-center mt-2">{error}</p>
-        )}
+        {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+        {extractedText && <pre className="text-wrap">{extractedText}</pre>}
       </div>
     </div>
   );
