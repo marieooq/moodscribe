@@ -107,12 +107,61 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Update specific journal entry by ID
     const { data: updatedData, error: dbError } = await supabase
       .from("journal")
       .update({ text_data: text })
       .eq("id", journalId)
       .eq("user_id", user.id)
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error("Database error:", dbError);
+      return NextResponse.json(
+        { error: "Failed to update journal" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: updatedData,
+    });
+  } catch (error) {
+    console.error("Error updating journal:", error);
+    return NextResponse.json(
+      { error: "Error updating journal" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { journalId } = body;
+
+    if (!journalId) {
+      return NextResponse.json(
+        { error: "Text and journal ID are required" },
+        { status: 400 }
+      );
+    }
+
+    const { data: updatedData, error: dbError } = await supabase
+      .from("journal")
+      .delete()
+      .eq("id", journalId)
       .select()
       .single();
 

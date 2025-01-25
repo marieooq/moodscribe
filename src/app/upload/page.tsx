@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import Image from "next/image";
-import { Loader2, Upload, X } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function UploadPage() {
@@ -119,6 +118,31 @@ export default function UploadPage() {
     }
   };
 
+  const handleCancel = async () => {
+    try {
+      setIsSaving(true);
+      const response = await fetch("/api/analyze-image", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          journalId: journalId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save");
+      }
+
+      router.push("/");
+    } catch (error) {
+      console.error("Error saving:", error);
+      setError("Failed to save changes");
+    } finally {
+      setIsSaving(false);
+    }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-4">
@@ -164,7 +188,7 @@ export default function UploadPage() {
             />
             <div className="flex justify-end gap-4">
               <button
-                onClick={() => router.push("/")}
+                onClick={handleCancel}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800"
               >
                 Cancel
