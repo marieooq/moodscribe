@@ -10,7 +10,10 @@ const client = new OpenAI({
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -51,18 +54,18 @@ export async function POST(req: NextRequest) {
 
     // Store in database with user_id
     const { data: savedData, error: dbError } = await supabase
-      .from('journal')
+      .from("journal")
       .insert([
         {
           text_data: extractedText,
-          user_id: user.id  // Add this line
-        }
+          user_id: user.id, // Add this line
+        },
       ])
       .select()
       .single();
 
     if (dbError) {
-      console.error('Database error:', dbError);
+      console.error("Database error:", dbError);
       return NextResponse.json(
         { error: "Failed to save analysis" },
         { status: 500 }
@@ -71,12 +74,64 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       result: extractedText,
-      savedData
+      savedData,
     });
   } catch (error) {
     console.error("Error processing image:", error);
     return NextResponse.json(
       { error: "Error processing image" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Get the JSON body from the request
+    const body = await req.json();
+    const { text } = body;
+
+    if (!text) {
+      return NextResponse.json(
+        { error: "No text provided" },
+        { status: 400 }
+      );
+    }
+
+    // Update the most recent journal entry for this user
+    const { data: updatedData, error: dbError } = await supabase
+      .from('journal')
+      .update({ text_data: text })
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error('Database error:', dbError);
+      return NextResponse.json(
+        { error: "Failed to update journal" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ 
+      success: true,
+      data: updatedData
+    });
+    
+  } catch (error) {
+    console.error("Error updating journal:", error);
+    return NextResponse.json(
+      { error: "Error updating journal" },
       { status: 500 }
     );
   }

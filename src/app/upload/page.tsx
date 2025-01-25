@@ -9,8 +9,10 @@ export default function UploadPage() {
   const router = useRouter();
   const [dragActive, setDragActive] = useState(false);
   const [extractedText, setExtractedText] = useState("");
+  const [editedText, setEditedText] = useState("");
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleDrag = useCallback((e) => {
     e.preventDefault();
@@ -55,6 +57,7 @@ export default function UploadPage() {
         console.log({ data });
 
         setExtractedText(data.result);
+        setEditedText(data.result); // Set initial value for editing
         setIsUploading(false);
 
         // Redirect to home page after successful upload
@@ -86,6 +89,30 @@ export default function UploadPage() {
     },
     [processFile]
   );
+
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      const response = await fetch("/api/analyze-image", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: editedText }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save");
+      }
+
+      router.push("/");
+    } catch (error) {
+      console.error("Error saving:", error);
+      setError("Failed to save changes");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -122,7 +149,31 @@ export default function UploadPage() {
           )}
         </div>
         {error && <p className="text-red-500 text-center mt-2">{error}</p>}
-        {extractedText && <pre className="text-wrap">{extractedText}</pre>}
+        {extractedText && (
+          <div className="space-y-4">
+            <textarea
+              value={editedText}
+              onChange={(e) => setEditedText(e.target.value)}
+              className="w-full min-h-[200px] p-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Edit your journal entry..."
+            />
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => router.push("/")}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={isSaving || isUploading}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                {isSaving ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
