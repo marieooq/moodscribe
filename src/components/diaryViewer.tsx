@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Calendar, Grid, List } from "lucide-react";
+import { Calendar, Grid } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -20,7 +20,6 @@ const DiaryViewer = ({ entries }: DiaryViewerProps) => {
   const router = useRouter();
   const [viewMode, setViewMode] = useState("card");
 
-  // カード表示
   const CardView = () => (
     <div>
       {entries.map((entry) => (
@@ -45,16 +44,15 @@ const DiaryViewer = ({ entries }: DiaryViewerProps) => {
     </div>
   );
 
-  // カレンダー表示
   const CalendarView = () => (
     <div className="grid grid-cols-7 gap-2">
-      {/* カレンダーのヘッダー */}
+      {/* calendar header */}
       {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
         <div key={day} className="text-center font-bold p-2">
           {day}
         </div>
       ))}
-      {/* カレンダーのセル */}
+      {/* calendar cells */}
       {Array(35)
         .fill(null)
         .map((_, index) => {
@@ -75,23 +73,9 @@ const DiaryViewer = ({ entries }: DiaryViewerProps) => {
     </div>
   );
 
-  // リスト表示
-  const ListView = () => (
-    <div className="space-y-4">
-      {entries.map((entry, index) => (
-        <div key={index} className="border-b pb-4">
-          <div className="font-bold">
-            {new Date(entry.created_at).toLocaleDateString("ja-JP")}
-          </div>
-          <div className="mt-2">{entry.text_data}</div>
-        </div>
-      ))}
-    </div>
-  );
-
   return (
     <div className="p-4 space-y-4 items-center w-full max-w-screen-md mx-auto">
-      {/* ビュー切替ボタン */}
+      {/* switch views */}
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setViewMode("card")}
@@ -109,20 +93,11 @@ const DiaryViewer = ({ entries }: DiaryViewerProps) => {
         >
           <Calendar className="w-5 h-5" />
         </button>
-        <button
-          onClick={() => setViewMode("list")}
-          className={`p-2 rounded ${
-            viewMode === "list" ? "bg-blue-500 text-white" : "bg-gray-200"
-          }`}
-        >
-          <List className="w-5 h-5" />
-        </button>
       </div>
 
-      {/* コンテンツ表示 */}
+      {/* display content */}
       {viewMode === "card" && <CardView />}
       {viewMode === "calendar" && <CalendarView />}
-      {viewMode === "list" && <ListView />}
     </div>
   );
 };
