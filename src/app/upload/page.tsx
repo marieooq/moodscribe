@@ -123,19 +123,21 @@ export default function UploadPage() {
   const handleCancel = async () => {
     try {
       setIsSaving(true);
-      const response = await fetch("/api/analyze-image", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          journalId: journalId,
-        }),
-      });
 
-      if (!response.ok) {
-        throw new Error("Failed to save");
-      }
+      const deleteJournal = async () => {
+        const { error: dbError } = await supabase
+          .from("journal")
+          .delete()
+          .eq("id", journalId)
+          .select()
+          .single();
+
+        if (dbError) {
+          console.log(dbError);
+        }
+      };
+
+      deleteJournal();
 
       router.push("/");
     } catch (error) {
