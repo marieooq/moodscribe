@@ -97,7 +97,7 @@ export default function UploadPage() {
     try {
       setIsSaving(true);
       const updateJournal = async () => {
-        const { data: updatedData, error: dbError } = await supabase
+        const { error: dbError } = await supabase
           .from("journal")
           .update({ text_data: editedText })
           .eq("id", journalId)
@@ -107,25 +107,9 @@ export default function UploadPage() {
         if (dbError) {
           console.log({ dbError });
         }
-        console.log({ updatedData });
       };
 
       updateJournal();
-
-      // const response = await fetch("/api/analyze-image", {
-      //   method: "PUT",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     text: editedText,
-      //     journalId: journalId,
-      //   }),
-      // });
-
-      // if (!response.ok) {
-      //   throw new Error("Failed to save");
-      // }
 
       router.push("/");
     } catch (error) {

@@ -20,7 +20,10 @@ function EditJournalContent({ id }: { id: string }) {
           id,
         })
         .single();
-      console.log({ selectedData });
+
+      if (dbError) {
+        console.log({ dbError });
+      }
       setEditedText(selectedData?.text_data);
     };
 
@@ -30,20 +33,20 @@ function EditJournalContent({ id }: { id: string }) {
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      const response = await fetch("/api/analyze-image", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: editedText,
-          journalId: id, // Now using unwrapped id
-        }),
-      });
+      const updateJournal = async () => {
+        const { error: dbError } = await supabase
+          .from("journal")
+          .update({ text_data: editedText })
+          .eq("id", id)
+          .select()
+          .single();
 
-      if (!response.ok) {
-        throw new Error("Failed to save");
-      }
+        if (dbError) {
+          console.log({ dbError });
+        }
+      };
+
+      updateJournal();
 
       router.push("/");
     } catch (error) {
