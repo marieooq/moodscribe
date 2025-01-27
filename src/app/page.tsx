@@ -26,14 +26,12 @@ export default async function Home() {
 
   if (fetchError) {
     console.error("Error fetching diary entries:", fetchError);
-    // Handle error appropriately
   }
 
   return (
     <>
-      <div className="p-4">
-        <p>Hello, {user.email}!</p>
-        {/* <ImageInputOutputContainer /> */}
+      <div className="p-4 items-center w-full max-w-screen-md mx-auto">
+        <p className="p-4">Hello, {user.email}!</p>
         <DiaryViewer entries={diaryEntries as DiaryEntry[]} />
       </div>
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t">

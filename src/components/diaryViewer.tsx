@@ -24,8 +24,8 @@ const DiaryViewer = ({ entries }: DiaryViewerProps) => {
   const CardView = () => (
     <div>
       {entries.map((entry) => (
-        <Card 
-          key={entry.id} 
+        <Card
+          key={entry.id}
           className="w-full mb-8 cursor-pointer hover:shadow-lg transition-shadow"
           onClick={() => router.push(`/journal/${entry.id}`)}
         >
@@ -90,7 +90,7 @@ const DiaryViewer = ({ entries }: DiaryViewerProps) => {
   );
 
   return (
-    <div className="p-4 space-y-4 aligflex items-center w-full max-w-screen-md mx-auto">
+    <div className="p-4 space-y-4 items-center w-full max-w-screen-md mx-auto">
       {/* ビュー切替ボタン */}
       <div className="flex gap-2 mb-4">
         <button
