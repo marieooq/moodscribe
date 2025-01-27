@@ -95,6 +95,8 @@ export default function EditJournalPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  // wrap params with use to avoid the issue.
+  // https://github.com/vercel/next.js/issues/71690
   const { id } = use(params);
 
   return <EditJournalContent id={id} />;
