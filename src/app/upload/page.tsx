@@ -3,8 +3,10 @@
 import { useCallback, useState } from "react";
 import { Loader2, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 export default function UploadPage() {
+  const supabase = createClient();
   const router = useRouter();
   const [dragActive, setDragActive] = useState(false);
   const [extractedText, setExtractedText] = useState("");
@@ -94,20 +96,36 @@ export default function UploadPage() {
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      const response = await fetch("/api/analyze-image", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: editedText,
-          journalId: journalId,
-        }),
-      });
+      const updateJournal = async () => {
+        const { data: updatedData, error: dbError } = await supabase
+          .from("journal")
+          .update({ text_data: editedText })
+          .eq("id", journalId)
+          .select()
+          .single();
 
-      if (!response.ok) {
-        throw new Error("Failed to save");
-      }
+        if (dbError) {
+          console.log({ dbError });
+        }
+        console.log({ updatedData });
+      };
+
+      updateJournal();
+
+      // const response = await fetch("/api/analyze-image", {
+      //   method: "PUT",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     text: editedText,
+      //     journalId: journalId,
+      //   }),
+      // });
+
+      // if (!response.ok) {
+      //   throw new Error("Failed to save");
+      // }
 
       router.push("/");
     } catch (error) {

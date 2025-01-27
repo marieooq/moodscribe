@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-import encodeImage from "../../../utils/encodeImage";
+import encodeImage from "@/utils/encodeImage";
 import { createClient } from "@/utils/supabase/server";
 
 const client = new OpenAI({
