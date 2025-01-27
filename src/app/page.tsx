@@ -22,8 +22,6 @@ export default async function Home() {
     .select("id, text_data, created_at")
     .order("created_at", { ascending: false });
 
-  console.log({ diaryEntries });
-
   if (fetchError) {
     console.error("Error fetching diary entries:", fetchError);
   }
