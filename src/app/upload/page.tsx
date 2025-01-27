@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Loader2, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -16,7 +16,7 @@ export default function UploadPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [journalId, setJournalId] = useState(null);
 
-  const handleDrag = useCallback((e) => {
+  const handleDrag = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
@@ -26,56 +26,50 @@ export default function UploadPage() {
     }
   }, []);
 
-  const processFile = useCallback(
-    async (file) => {
-      if (!file) return;
+  const processFile = useCallback(async (file: File) => {
+    if (!file) return;
 
-      if (!file.type.startsWith("image/")) {
-        setError("Only image files can be uploaded.");
-        return;
+    if (!file.type.startsWith("image/")) {
+      setError("Only image files can be uploaded.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Please keep the file size under 5MB.");
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await fetch("/api/analyze-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
       }
 
-      if (file.size > 5 * 1024 * 1024) {
-        setError("Please keep the file size under 5MB.");
-        return;
-      }
+      const data = await response.json();
 
-      try {
-        setIsUploading(true);
-        const formData = new FormData();
-        formData.append("image", file);
+      console.log({ data });
 
-        const response = await fetch("/api/analyze-image", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error("Upload failed");
-        }
-
-        const data = await response.json();
-
-        console.log({ data });
-
-        setExtractedText(data.result);
-        setEditedText(data.result); // Set initial value for editing
-        setJournalId(data.savedData.id);
-        setIsUploading(false);
-
-        // Redirect to home page after successful upload
-        //   router.push('/');
-      } catch (err) {
-        setIsUploading(false);
-        setError("An error occurred during upload.");
-        console.error("Upload error:", err);
-      }
-    },
-    [router]
-  );
+      setExtractedText(data.result);
+      setEditedText(data.result);
+      setJournalId(data.savedData.id);
+      setIsUploading(false);
+    } catch (err) {
+      setIsUploading(false);
+      setError("An error occurred during upload.");
+      console.error("Upload error:", err);
+    }
+  }, []);
 
   const handleDrop = useCallback(
-    (e) => {
+    (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       e.stopPropagation();
       setDragActive(false);
@@ -86,9 +80,9 @@ export default function UploadPage() {
   );
 
   const handleChange = useCallback(
-    (e) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
-      processFile(file);
+      if (file) processFile(file);
     },
     [processFile]
   );
