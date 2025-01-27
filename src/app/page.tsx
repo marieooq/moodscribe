@@ -1,4 +1,3 @@
-import ImageInputOutputContainer from "@/components/imageInputOutput/imageInputOutputContainer";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import DiaryViewer from "@/components/diaryViewer";
@@ -34,7 +33,7 @@ export default async function Home() {
     <>
       <div className="p-4">
         <p>Hello, {user.email}!</p>
-        <ImageInputOutputContainer />
+        {/* <ImageInputOutputContainer /> */}
         <DiaryViewer entries={diaryEntries as DiaryEntry[]} />
       </div>
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t">
