@@ -44,37 +44,53 @@ const DiaryViewer = ({ entries }: DiaryViewerProps) => {
     </div>
   );
 
-  const CalendarView = () => (
-    <div className="grid grid-cols-7 gap-2">
-      {/* calendar header */}
-      {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-        <div key={day} className="text-center font-bold p-2">
-          {day}
-        </div>
-      ))}
-      {/* calendar cells */}
-      {Array(35)
-        .fill(null)
-        .map((_, index) => {
-          const entry = entries.find(
-            (e) => new Date(e.created_at).getDate() === index + 1
-          );
-          return (
-            <div key={index} className="border p-2 h-24 overflow-hidden">
-              <div className="font-bold">{index + 1}</div>
-              {entry && (
-                <div className="text-xs">
-                  {entry.text_data.substring(0, 50)}...
-                </div>
-              )}
-            </div>
-          );
-        })}
-    </div>
-  );
+  const CalendarView = () => {
+    const router = useRouter();
+
+    return (
+      <div className="grid grid-cols-7 gap-2">
+        {/* calendar header */}
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+          <div key={day} className="text-center font-bold p-2">
+            {day}
+          </div>
+        ))}
+        {/* calendar cells */}
+        {Array(35)
+          .fill(null)
+          .map((_, index) => {
+            const entry = entries.find(
+              (e) => new Date(e.created_at).getDate() === index + 1
+            );
+            return (
+              <div
+                key={index}
+                className={`border p-2 h-24 overflow-hidden ${
+                  entry
+                    ? "cursor-pointer hover:shadow-md transition-shadow"
+                    : ""
+                }`}
+                onClick={() => entry && router.push(`/journal/${entry.id}`)}
+              >
+                <div className="font-bold">{index + 1}</div>
+                {entry && (
+                  <div className="text-xs">
+                    {entry.text_data.substring(0, 50)}...
+                  </div>
+                )}
+              </div>
+            );
+          })}
+      </div>
+    );
+  };
 
   return (
-    <div className="p-4 space-y-4 items-center w-full max-w-screen-md mx-auto">
+    <div
+      className={`p-4 space-y-4 items-center w-full max-w-screen-md mx-auto ${
+        viewMode === "calendar" && "mb-10"
+      }`}
+    >
       {/* switch views */}
       <div className="flex gap-2 mb-4">
         <button
