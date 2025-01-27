@@ -10,8 +10,8 @@ const UploadJournal = () => {
   return (
     <div className="flex justify-center max-w-md mx-auto w-full">
       <Button
-        onClick={() => router.push('/upload')}
-        className="w-full md:w-64"
+        onClick={() => router.push("/upload")}
+        className="w-full md:w-64 bg-blue-500 hover:bg-blue-400 active:bg-blue-300"
       >
         <Upload className="w-4 h-4 mr-2" />
         Upload Journal
