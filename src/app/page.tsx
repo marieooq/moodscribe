@@ -19,7 +19,7 @@ export default async function Home() {
   // Fetch diary entries
   const { data: diaryEntries, error: fetchError } = await supabase
     .from("journal")
-    .select("*")
+    .select("id, text_data, created_at")
     .order("created_at", { ascending: false });
 
   console.log({ diaryEntries });
