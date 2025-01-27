@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import DiaryViewer from "@/components/diaryViewer";
+import DiaryViewer from "@/components/diary-viewer";
 import type { DiaryEntry } from "@/types/diary";
-import UploadJournal from "@/components/uploadJournal";
+import UploadJournal from "@/components/upload-journal";
 
 export default async function Home() {
   const supabase = await createClient();
